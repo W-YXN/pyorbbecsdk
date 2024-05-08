@@ -13,33 +13,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 # ******************************************************************************
-
+from pyorbbecsdk import *
 import os
 
-import numpy as np
-import open3d as o3d
-
-from pyorbbecsdk import *
-
 save_points_dir = os.path.join(os.getcwd(), "point_clouds")
-os.makedirs(save_points_dir, exist_ok=True)
+if not os.path.exists(save_points_dir):
+    os.mkdir(save_points_dir)
 
 
-def convert_to_o3d_point_cloud(points, colors=None):
-    """
-    Converts numpy arrays of points and colors (if provided) into an Open3D point cloud object.
-    """
-    pcd = o3d.geometry.PointCloud()
-    pcd.points = o3d.utility.Vector3dVector(points)
-    if colors is not None:
-        pcd.colors = o3d.utility.Vector3dVector(colors / 255.0)  # Assuming colors are in [0, 255]
-    return pcd
-
-
-def save_points_to_ply(frames: FrameSet, camera_param: OBCameraParam):
-    """
-    Saves the point cloud data to a PLY file using Open3D.
-    """
+def save_points_to_ply(frames: FrameSet, camera_param: OBCameraParam) -> int:
     if frames is None:
         return 0
     depth_frame = frames.get_depth_frame()
@@ -47,55 +29,56 @@ def save_points_to_ply(frames: FrameSet, camera_param: OBCameraParam):
         return 0
     points = frames.get_point_cloud(camera_param)
     if points is None or len(points) == 0:
-        print("No points to save.")
+        print("no depth points")
         return 0
-    # Convert points to Open3D point cloud
-    pcd = convert_to_o3d_point_cloud(np.array(points))
-
-    #print("no color")
-    #o3d.visualization.draw_geometries([pcd])
-
-    points_filename = os.path.join(save_points_dir, f"points_{depth_frame.get_timestamp()}.ply")
-    # Save to PLY file
-    o3d.io.write_point_cloud(points_filename, pcd)
+    global save_points_dir
+    points_filename = save_points_dir + "/points_{}.ply".format(depth_frame.get_timestamp())
+    with open(points_filename, "w") as f:
+        f.write("ply\n")
+        f.write("format ascii 1.0\n")
+        f.write("element vertex {}\n".format(len(points)))
+        f.write("property float x\n")
+        f.write("property float y\n")
+        f.write("property float z\n")
+        f.write("end_header\n")
+        for point in points:
+            f.write("{} {} {}\n".format(point[0], point[1], point[2]))
     return 1
 
 
-def save_color_points_to_ply(frames: FrameSet, camera_param: OBCameraParam):
-    """
-    Saves the color point cloud data to a PLY file using Open3D.
-    """
+def save_color_points_to_ply(frames: FrameSet, camera_param: OBCameraParam) -> int:
     if frames is None:
         return 0
     depth_frame = frames.get_depth_frame()
     if depth_frame is None:
         return 0
-    points_depth = frames.get_point_cloud(camera_param)
     points = frames.get_color_point_cloud(camera_param)
     if points is None or len(points) == 0:
-        print("No color points to save.")
+        print("no color points")
         return 0
-    # Assuming the color information is included in the points array
-    # This part might need to be adjusted based on the actual format of the points array
-    xyz = np.array(points[:, :3])
-    colors = np.array(points[:, 3:], dtype=np.uint8)
+    global save_points_dir
+    points_filename = save_points_dir + "/color_points_{}.ply".format(depth_frame.get_timestamp())
+    with open(points_filename, "w") as f:
+        f.write("ply\n")
+        f.write("format ascii 1.0\n")
+        f.write("element vertex {}\n".format(len(points)))
+        f.write("property float x\n")
+        f.write("property float y\n")
+        f.write("property float z\n")
+        f.write("property uchar red\n")
+        f.write("property uchar green\n")
+        f.write("property uchar blue\n")
+        f.write("end_header\n")
+        for point in points:
+            x = point[0]
+            y = point[1]
+            z = point[2]
+            r = int(point[3])
+            g = int(point[4])
+            b = int(point[5])
+            f.write(
+                "{} {} {} {} {} {}\n".format(x, y, z, r, g, b))
 
-    pcd_depth = convert_to_o3d_point_cloud(np.array(points_depth))
-    pcd = convert_to_o3d_point_cloud(xyz, colors)
-
-    print("color vals", np.unique(colors, axis=0))
-    print("depth only pts", np.unique(points_depth, axis=0))
-    print("xyz vals color", np.unique(xyz, axis=0))
-    
-    # Show point clouds with open3d
-    print("no color")
-    o3d.visualization.draw_geometries([pcd_depth])
-    print("color")
-    o3d.visualization.draw_geometries([pcd])
-
-    points_filename = os.path.join(save_points_dir, f"color_points_{depth_frame.get_timestamp()}.ply")
-    # Save to PLY file
-    o3d.io.write_point_cloud(points_filename, pcd)
     return 1
 
 
@@ -118,17 +101,19 @@ def main():
             color_profile: VideoStreamProfile = profile_list.get_default_video_stream_profile()
             config.enable_stream(color_profile)
             if device_pid == 0x066B:
-                # Femto Mega does not support hardware D2C, and it is changed to software D2C
-                config.set_align_mode(OBAlignMode.SW_MODE)
+                #Femto Mega does not support hardware D2C, and it is changed to software D2C
+               config.set_align_mode(OBAlignMode.SW_MODE)
             else:
-                config.set_align_mode(OBAlignMode.HW_MODE)
+               config.set_align_mode(OBAlignMode.HW_MODE)
             has_color_sensor = True
     except OBError as e:
         config.set_align_mode(OBAlignMode.DISABLE)
         print(e)
+        breakpoint()
+
+    assert(has_color_sensor) #  or config.get_align_mode() == OBAlignMode.DISABLE)
 
     pipeline.start(config)
-    pipeline.enable_frame_sync()
     saved_color_cnt: int = 0
     saved_depth_cnt: int = 0
     while True:

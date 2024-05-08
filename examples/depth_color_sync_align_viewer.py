@@ -21,8 +21,22 @@ import numpy as np
 
 from pyorbbecsdk import *
 from utils import frame_to_bgr_image
+import sys
+import argparse
+import open3d as o3d
 
 ESC_KEY = 27
+
+
+def convert_to_o3d_point_cloud(points, colors=None):
+    """
+    Converts numpy arrays of points and colors (if provided) into an Open3D point cloud object.
+    """
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(points)
+    if colors is not None:
+        pcd.colors = o3d.utility.Vector3dVector(colors / 255.0)  # Assuming colors are in [0, 255]
+    return pcd
 
 
 def main(argv):
@@ -76,11 +90,13 @@ def main(argv):
             print(e)
     try:
         pipeline.start(config)
+        camera_param = pipeline.get_camera_param()
     except Exception as e:
         print(e)
         return
     while True:
         try:
+            # print(camera_param)
             frames: FrameSet = pipeline.wait_for_frames(100)
             if frames is None:
                 continue
@@ -99,6 +115,15 @@ def main(argv):
             width = depth_frame.get_width()
             height = depth_frame.get_height()
             scale = depth_frame.get_depth_scale()
+
+            # convert to numpy array
+            rgb_image = color_image.copy()
+            rgb_image[:, :, 0] = color_image[:, :, 2]
+            rgb_image[:, :, 2] = color_image[:, :, 0]
+
+            points = frames.get_point_cloud(camera_param)
+            pcd = convert_to_o3d_point_cloud(points / 1000, rgb_image.reshape(-1, 3))
+            o3d.visualization.draw_geometries([pcd])
 
             depth_data = np.frombuffer(depth_frame.get_data(), dtype=np.uint16)
             depth_data = depth_data.reshape((height, width))
