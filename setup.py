@@ -1,77 +1,74 @@
-# ******************************************************************************
-#  Copyright (c) 2023 Orbbec 3D Technology, Inc
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#      http:# www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-# ******************************************************************************
-
 import os
-import shutil
-
+import re
+import sys
+import platform
+import subprocess
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
+# A CMakeExtension that holds no source files,
+# as our sources are built via CMake.
+class CMakeExtension(Extension):
+    def __init__(self, name, sourcedir=''):
+        super().__init__(name, sources=[])
+        self.sourcedir = os.path.abspath(sourcedir)
 
-class PrebuiltExtension(Extension):
-    def __init__(self, name, lib_dir=''):
-        super().__init__(name, sources=[])  # No sources to compile
-        self.lib_dir = os.path.abspath(lib_dir)
-
-
-class CustomBuildExt(build_ext):
+# A custom build_ext command that calls CMake.
+class CMakeBuild(build_ext):
     def run(self):
+        # Ensure CMake is installed.
+        try:
+            subprocess.check_output(['cmake', '--version'])
+        except OSError:
+            raise RuntimeError("CMake must be installed to build the following extensions: " +
+                               ", ".join(e.name for e in self.extensions))
         for ext in self.extensions:
             self.build_extension(ext)
 
     def build_extension(self, ext):
-        # Check if the lib directory exists and contains files
-        if not os.path.isdir(ext.lib_dir) or not os.listdir(ext.lib_dir):
-            raise FileNotFoundError(
-                f"Directory '{ext.lib_dir}' is empty or does not exist. "
-                "Please compile the necessary components with CMake as described in the README."
-            )
-
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-        os.makedirs(extdir, exist_ok=True)  # Ensure the destination path exists
-        self.copy_all_files(ext.lib_dir, extdir)
+        # Get the pybind11 directory using pybind11-config.
+        try:
+            pybind11_dir = subprocess.check_output(['pybind11-config', '--cmakedir']).decode().strip()
+        except Exception as e:
+            raise RuntimeError("Failed to determine pybind11 CMake dir via pybind11-config: " + str(e))
 
-    def copy_all_files(self, source_dir, destination_dir):
-        os.makedirs(destination_dir, exist_ok=True)  # Ensure the entire destination directory structure exists
+        # Configure cmake arguments.
+        cmake_args = [
+            f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}',
+            f'-DPYTHON_EXECUTABLE={sys.executable}',
+            f'-Dpybind11_DIR={pybind11_dir}',  # Incorporates the build command flag.
+        ]
 
-        for item in os.listdir(source_dir):
-            source_path = os.path.join(source_dir, item)
-            destination_path = os.path.join(destination_dir, item)
+        cfg = 'Debug' if self.debug else 'Release'
+        build_args = ['--config', cfg]
 
-            if os.path.islink(source_path):
-                link_target = os.readlink(source_path)
-                if os.path.exists(destination_path):
-                    os.remove(destination_path)
-                os.symlink(link_target, destination_path)
-                print(f"Preserved symbolic link {destination_path} -> {link_target}")
-            elif os.path.isdir(source_path):
-                self.copy_all_files(source_path, destination_path)
-            else:
-                shutil.copy2(source_path, destination_path)
-                print(f"Copied {source_path} to {destination_path}")
+        if platform.system() == "Windows":
+            cmake_args += [f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}']
+            if sys.maxsize > 2**32:
+                cmake_args += ['-A', 'x64']
+            build_args += ['--', '/m']
+        else:
+            cmake_args += [f'-DCMAKE_BUILD_TYPE={cfg}']
+            build_args += ['--', '-j2']
 
+        # Create the build directory if it doesn't exist.
+        build_temp = os.path.abspath(self.build_temp)
+        os.makedirs(build_temp, exist_ok=True)
+
+        # Run CMake configuration.
+        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=build_temp)
+        # Build the project.
+        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=build_temp)
 
 setup(
     name='pyorbbecsdk',
-    version='1.3.1',
-    author='Joe Dong',
-    author_email='mocun@orbbec.com',
-    description='pyorbbecsdk is a python wrapper for the OrbbecSDK',
+    version='0.0.1',
+    author='Your Name',
+    author_email='your.email@example.com',
+    description='Python bindings for OrbbecSDK using pybind11',
     long_description='',
-    ext_modules=[PrebuiltExtension('pyorbbecsdk', 'install/lib')],
-    cmdclass={'build_ext': CustomBuildExt},
+    ext_modules=[CMakeExtension('pyorbbecsdk', sourcedir='.')],
+    cmdclass={'build_ext': CMakeBuild},
     zip_safe=False,
 )
