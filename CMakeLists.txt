@@ -56,7 +56,7 @@ else()
 endif()
 
 link_directories(${ORBBEC_LIBS})
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
 link_directories(${ORBBEC_LIBS})
 
 pybind11_add_module(${PROJECT_NAME}
