@@ -9,112 +9,151 @@ on:
         default: 'v*'
 
 jobs:
+  # Job 1: Checkout code on host and upload as artifact
+  prepare:
+    name: Prepare Source Code
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ github.event.inputs.tag }} # Pass tag along if needed later
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag }}
+          # fetch-depth: 0 # Uncomment if your build needs full history
+
+      - name: Upload source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-code
+          path: . # Upload current directory
+
+  # Job 2: Build wheels for different platforms
   build:
+    name: Build Wheel (${{ matrix.name }}/${{ matrix.python-version }})
+    needs: prepare # Run after prepare job
     strategy:
+      fail-fast: false # Keep running other jobs even if one fails
       matrix:
         include:
+          # Use manylinux_2_28 container (glibc >= 2.28, compatible with Node20 actions)
           - os: ubuntu-latest
-            name: manylinux2014
-            container: quay.io/pypa/manylinux2014_x86_64
+            name: manylinux_2_28
+            container: quay.io/pypa/manylinux_2_28_x86_64
             python-version: 3.12
+            plat_tag: manylinux_2_28_x86_64 # Platform tag for auditwheel
           - os: macos-latest
             name: macos
             python-version: 3.12
+            plat_tag: macosx_ # Let build figure out the exact tag
           - os: windows-latest
             name: windows
             python-version: 3.12
+            plat_tag: win_amd64 # Standard windows tag
+
     runs-on: ${{ matrix.os }}
+    # Apply container only for the Linux build matrix entry
     container: ${{ matrix.container || fromJSON('null') }}
 
     steps:
-      - uses: actions/checkout@v4
+      # Download source code artifact from prepare job
+      - name: Download source code
+        uses: actions/download-artifact@v4
         with:
-          ref: ${{ github.event.inputs.tag }}
-      
+          name: source-code
+          path: . # Download to current directory
+
+      # Set up Python - Should work inside manylinux_2_28 container now
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      
+
+      # Install Python build dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Add pybind11-stubgen dependency
-          pip install pybind11==2.11.0 pybind11-global==2.11.0 wheel setuptools pybind11-stubgen build auditwheel
-      
+          pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
+
+      # Configure CMake
       - name: Configure CMake
         run: cmake -S . -B build -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }}
-      
+
+      # Build C++ Extension
       - name: Build C++ Extension
         run: cmake --build build --config Release
-      
+
+      # Install C++ Extension into install/ (needed for stubs)
       - name: Install C++ Extension into install/
         run: cmake --install build --prefix install
 
-      # —— Generate Python stubs before packaging the wheel —— 
+      # Generate Python stubs (OS-specific environment setup)
       - name: Generate Python Stubs (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           export DYLD_LIBRARY_PATH=$(pwd)/install/lib:$DYLD_LIBRARY_PATH
           export PYTHONPATH=$(pwd)/install/lib:$PYTHONPATH
-          python -m pybind11_stubgen pyorbbecsdk \
-            --output-dir=src/pyorbbecsdk --ignore-all-errors
+          python -m pybind11_stubgen pyorbbecsdk --output-dir=src/pyorbbecsdk --ignore-all-errors
 
       - name: Generate Python Stubs (Linux)
-        if: matrix.name == 'manylinux2014'
+        if: matrix.name == 'manylinux_2_28'
         run: |
           export LD_LIBRARY_PATH=$(pwd)/install/lib:$LD_LIBRARY_PATH
           export PYTHONPATH=$(pwd)/install/lib:$PYTHONPATH
-          python -m pybind11_stubgen pyorbbecsdk \
-            --output-dir=src/pyorbbecsdk --ignore-all-errors
+          python -m pybind11_stubgen pyorbbecsdk --output-dir=src/pyorbbecsdk --ignore-all-errors
 
       - name: Generate Python Stubs (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           $root = (Get-Location).Path
-          $env:PATH = "$root\install\lib;$env:PATH"
-          $env:PYTHONPATH = "$root\install\lib;$env:PYTHONPATH"
-          python -m pybind11_stubgen pyorbbecsdk `
-            --output-dir=src\pyorbbecsdk --ignore-all-errors
-      # ———————————————————————————————
+          $env:PATH = "$root\install\lib;$env:PATH" # Add DLL dir to PATH
+          $env:PYTHONPATH = "$root\install\lib;$env:PYTHONPATH" # Add install dir to PYTHONPATH
+          python -m pybind11_stubgen pyorbbecsdk --output-dir=src\pyorbbecsdk --ignore-all-errors
 
+      # Build Python Wheel using python -m build
       - name: Build Python Wheel
         run: python -m build --wheel --outdir dist/
 
+      # Repair wheel with auditwheel (Linux only) - Target manylinux_2_28
       - name: (Linux only) Repair with auditwheel
-        if: matrix.name == 'manylinux2014'
+        if: matrix.name == 'manylinux_2_28'
         run: |
           auditwheel repair dist/*.whl \
-            --plat manylinux2014_x86_64 \
+            --plat ${{ matrix.plat_tag }} \
             -w dist/
 
+      # Cleanup original non-manylinux wheel (Linux only)
       - name: (Linux only) Cleanup original wheels
-        if: matrix.name == 'manylinux2014'
+        if: matrix.name == 'manylinux_2_28'
         run: |
+          # Find wheels in dist/ that DO NOT contain the platform tag and delete them
           find dist/ -maxdepth 1 -type f -name '*.whl' \
-            ! -name '*manylinux2014_x86_64*.whl' \
+            ! -name '*${{ matrix.plat_tag }}*.whl' \
             -delete
 
-      - name: Upload platform‑tagged wheel
+      # Upload platform-tagged wheel artifact - Should work inside manylinux_2_28 container
+      - name: Upload platform-tagged wheel
         uses: actions/upload-artifact@v4
         with:
-          name: python-wheel-${{ matrix.os }}-${{ matrix.python-version }}
-          path: dist/*.whl
+          # Use a consistent naming scheme, incorporating platform name
+          name: python-wheel-${{ matrix.name }}-${{ matrix.python-version }}
+          path: dist/*.whl # Upload only the remaining wheel(s) in dist/
 
+  # Job 3: Publish to PyPI (adjust download logic slightly)
   pypi-publish:
     name: Publish to PyPI
-    needs: build
+    needs: build # Depends on all build matrix jobs completing successfully
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
-      id-token: write
+      id-token: write # Needed for trusted publishing
 
     steps:
-      - name: Download all artifacts (all platforms)
+      # Download all wheel artifacts from the build job
+      - name: Download all wheel artifacts
         uses: actions/download-artifact@v4
         with:
-          extract: true
           path: downloaded
 
       - name: Flatten wheel files into dist/
@@ -127,5 +166,10 @@ jobs:
             unzip -q "$z" '*.whl' -d dist
           done
 
+      - name: List downloaded files # for debugging
+        run: ls -R dist
+
+      # Publish package distributions to PyPI
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        # No need for username/password with trusted publishing via id-token
