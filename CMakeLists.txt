@@ -19,6 +19,9 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif ()
 
+# Include FetchContent module
+include(FetchContent)
+
 if (WIN32)
   set(ORBBEC_LIB_PREFIX "")
   set(ORBBEC_LIB_SUFFIX ".lib")
@@ -34,8 +37,19 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DetermineHostPlatform.cmake)
 
 set(ORBBEC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib/${HOST_PLATFORM})
 set(ORBBEC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
+
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-find_package(pybind11 REQUIRED)
+
+# Download and configure pybind11
+FetchContent_Declare(
+  pybind11
+  GIT_REPOSITORY https://github.com/pybind/pybind11.git
+  GIT_TAG        v2.13.6  # Adjust version as needed
+)
+FetchContent_MakeAvailable(pybind11)
+
+link_directories(${ORBBEC_LIBS})
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 link_directories(${ORBBEC_LIBS})
 
 pybind11_add_module(${PROJECT_NAME}
