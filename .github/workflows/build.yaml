@@ -72,7 +72,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
-          $env:PATH = "$(pwd)\install\bin;$env:PATH"
+          $root = (Get-Location).Path
+          $env:PATH = "$root\install\lib;$env:PATH"
+          $env:PYTHONPATH = "$root\install\lib;$env:PYTHONPATH"
           pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
 
       - name: Upload platform‑tagged wheel
@@ -101,7 +103,6 @@ jobs:
           mkdir dist
           for d in downloaded/*; do
             mv "$d"/*.whl dist/
-          done
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
