@@ -44,8 +44,17 @@ jobs:
       - name: Build Python Wheel
         run: python setup.py bdist_wheel
 
-      # Install the built wheel
-      - name: Install built wheel
+      # Install the built wheel (Windows / PowerShell 不会自动展开 *.whl)
+      - name: Install built wheel (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $wheel = Get-ChildItem dist -Filter *.whl | Select-Object -ExpandProperty FullName
+          python -m pip install $wheel
+
+      # Install the built wheel (macOS/Linux)
+      - name: Install built wheel (Unix)
+        if: matrix.os != 'windows-latest'
         run: python -m pip install dist/*.whl
 
       # Now generate stubs, the module should be found
