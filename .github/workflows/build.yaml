@@ -102,16 +102,32 @@ jobs:
         run: |
           yum install -y python3-devel # Install Python 3 development headers
           yum install -y cmake # Install CMake
+          echo "PATH=/usr/bin:$PATH" >> $GITHUB_ENV # Ensure /usr/bin is in PATH for CMake
           python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
 
-      # Configure CMake
+      # Add diagnostic step to find Python library
+      - name: Find Python library (Linux)
+        if: matrix.name == 'manylinux_2_34'
+        run: |
+          echo "Looking for Python library..."
+          ls -la /opt/python/cp39-cp39/lib/
+          find /opt/python/cp39-cp39/lib -name "libpython3.9*.so*" || echo "No libpython3.9.so found"
+          # Store the path to the Python library in an environment variable
+          PYTHON_LIB=$(find /opt/python/cp39-cp39/lib -name "libpython3.9*.so*" | head -n 1)
+          if [ -n "$PYTHON_LIB" ]; then
+            echo "Found Python library at: $PYTHON_LIB"
+            echo "PYTHON_LIB=$PYTHON_LIB" >> $GITHUB_ENV
+          fi
+
+      # Configure CMake with the found library path
       - name: Configure CMake (manylinux)
         if: matrix.name == 'manylinux_2_34'
         run: |
           cmake -S . -B build \
             -DPYBIND11_PYTHON_VERSION=3.9 \
             -DPython3_INCLUDE_DIR=/opt/python/cp39-cp39/include/python3.9 \
-            -DPython3_LIBRARY=/opt/python/cp39-cp39/lib/libpython3.9.so \
+            -DPython3_LIBRARY=${PYTHON_LIB:-/opt/python/cp39-cp39/lib/libpython3.9.so} \
+            -DPython3_FIND_STRATEGY=LOCATION \
             -DPython3_ROOT_DIR=/opt/python/cp39-cp39
 
       - name: Configure CMake (other platforms)
