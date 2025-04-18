@@ -35,7 +35,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DetermineHostPlatform.cmake)
 set(ORBBEC_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/sdk/lib/${HOST_PLATFORM})
 set(ORBBEC_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 # Check if pybind11 is already installed
 find_package(pybind11 QUIET)
@@ -56,7 +56,7 @@ else()
 endif()
 
 link_directories(${ORBBEC_LIBS})
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
 link_directories(${ORBBEC_LIBS})
 
 pybind11_add_module(${PROJECT_NAME}
