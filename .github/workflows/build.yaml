@@ -88,15 +88,19 @@ jobs:
     steps:
       - name: Download all artifacts (all platforms)
         uses: actions/download-artifact@v4
-        # no 'name' => download every artifact from this run
         with:
+          extract: true
           path: downloaded
 
       - name: Flatten wheel files into dist/
         run: |
-          mkdir dist
-          for d in downloaded/*; do
-            mv "$d"/*.whl dist/
+          set -euxo pipefail
+          mkdir -p dist
+          find downloaded -type f -name '*.whl' -exec mv {} dist/ \;
+          for z in downloaded/*.zip; do
+            [ -f "$z" ] || continue
+            unzip -q "$z" '*.whl' -d dist
+          done
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
