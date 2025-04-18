@@ -100,6 +100,8 @@ jobs:
       - name: Install dependencies (Linux)
         if: matrix.name == 'manylinux_2_34'
         run: |
+          yum install -y python3-devel # Install Python 3 development headers
+          yum install -y cmake # Install CMake
           python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
 
       # Configure CMake
@@ -108,7 +110,8 @@ jobs:
         run: |
           cmake -S . -B build \
             -DPYBIND11_PYTHON_VERSION=3.9 \
-            -DPython3_FIND_COMPONENTS="Interpreter;Development" \
+            -DPython3_INCLUDE_DIR=/opt/python/cp39-cp39/include/python3.9 \
+            -DPython3_LIBRARY=/opt/python/cp39-cp39/lib/libpython3.9.so \
             -DPython3_ROOT_DIR=/opt/python/cp39-cp39
 
       - name: Configure CMake (other platforms)
