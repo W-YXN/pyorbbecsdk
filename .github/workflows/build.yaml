@@ -29,7 +29,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # Add pybind11-stubgen dependency
-          pip install pybind11==2.11.0 pybind11-global==2.11.0 wheel setuptools pybind11-stubgen
+          pip install pybind11==2.11.0 pybind11-global==2.11.0 wheel setuptools pybind11-stubgen cibuildwheel
       
       - name: Configure CMake
         run: cmake -S . -B build -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }}
@@ -68,8 +68,10 @@ jobs:
             --output-dir=src\pyorbbecsdk --ignore-all-errors
       # ———————————————————————————————
 
-      - name: Build Python Wheel
-        run: python setup.py bdist_wheel
+      - name: Build wheels with cibuildwheel
+        env:
+          CIBW_OUTPUT_DIR: dist
+        run: python -m cibuildwheel
 
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
