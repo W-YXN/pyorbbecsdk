@@ -40,15 +40,15 @@ jobs:
           - os: ubuntu-latest
             name: manylinux_2_28
             container: quay.io/pypa/manylinux_2_28_x86_64
-            python-version: 3.8.18
+            python-version: 3.11
             plat_tag: manylinux_2_28_x86_64 # Platform tag for auditwheel
           - os: macos-latest
             name: macos
-            python-version: 3.8.18
+            python-version: 3.11
             plat_tag: macosx_ # Let build figure out the exact tag
           - os: windows-latest
             name: windows
-            python-version: 3.8.18
+            python-version: 3.11
             plat_tag: win_amd64 # Standard windows tag
 
     runs-on: ${{ matrix.os }}
