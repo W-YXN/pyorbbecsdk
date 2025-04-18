@@ -107,9 +107,9 @@ jobs:
         if: matrix.name == 'manylinux_2_34'
         run: |
           cmake -S . -B build \
-            -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }} \
+            -DPYBIND11_PYTHON_VERSION=3.9 \
             -DPython3_FIND_COMPONENTS="Interpreter;Development" \
-            -DPython3_ROOT_DIR=/opt/python/cp${{ matrix.python-version//./ }}-cp${{ matrix.python-version//./ }}
+            -DPython3_ROOT_DIR=/opt/python/cp39-cp39
 
       - name: Configure CMake (other platforms)
         if: matrix.name != 'manylinux_2_34'
