@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # 名称示例: python-sdist-1.2.3-ubuntu-latest
-          name: python-sdist-${{ replace(github.event.inputs.tag, 'v', '') }}-${{ matrix.os }}
+          name: python-sdist-${{ substring(github.event.inputs.tag, 1) }}-${{ matrix.os }}
           path: dist/*.tar.gz
 
   pypi-publish:
