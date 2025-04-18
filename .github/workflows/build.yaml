@@ -64,9 +64,16 @@ jobs:
           export DYLD_LIBRARY_PATH=$(pwd)/install/lib:$DYLD_LIBRARY_PATH
           pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
 
-      - name: Generate Python Stubs (non-macOS)
-        if: matrix.os != 'macos-latest'
+      - name: Generate Python Stubs (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
+
+      - name: Generate Python Stubs (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $env:PATH = "$(pwd)\install\bin;$env:PATH"
+          pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
 
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
