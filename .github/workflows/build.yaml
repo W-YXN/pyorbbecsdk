@@ -42,20 +42,30 @@ jobs:
             container: quay.io/pypa/manylinux_2_34_x86_64
             python-version: 3.9
             plat_tag: manylinux_2_34_x86_64 # Platform tag for auditwheel
+            shell: bash -l # Use bash shell for Linux containers
           - os: macos-latest
             name: macos
             python-version: 3.9
             plat_tag: macosx_ # Let build figure out the exact tag
+            shell: bash -l # Use bash shell for macOS
           - os: windows-latest
             name: windows
             python-version: 3.9
             plat_tag: win_amd64 # Standard windows tag
+            shell: pwsh # Use PowerShell for Windows
 
     runs-on: ${{ matrix.os }}
     # Apply container only for the Linux build matrix entry
     container: ${{ matrix.container || fromJSON('null') }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }} {0}
 
     steps:
+      - name: (Linux only) Prepend manylinux Python to PATH
+        if: matrix.name == 'manylinux_2_34'
+        run: echo "PATH=/opt/python/cp39-cp39/bin:$PATH" >> $GITHUB_ENV
+
       # Download source code artifact from prepare job
       - name: Download source code
         uses: actions/download-artifact@v4
@@ -64,7 +74,7 @@ jobs:
           path: . # Download to current directory
 
       # 为 Linux 容器使用预装的 Python
-      - name: Use container Python (Linux only)
+      - name: (Linux only) Use container Python 
         if: matrix.name == 'manylinux_2_34'
         run: |
           # 使用容器内预装的 Python 3.9（兼容 glibc 2.34）
