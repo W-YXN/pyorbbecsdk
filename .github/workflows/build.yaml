@@ -40,33 +40,22 @@ jobs:
       - name: Install C++ Extension into install/
         run: cmake --install build --prefix install
 
-      # Build the wheel first
-      - name: Build Python Wheel
-        run: python setup.py bdist_wheel
-
-      # Install the built wheel (Windows / PowerShell 不会自动展开 *.whl)
-      - name: Install built wheel (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          $wheel = Get-ChildItem dist -Filter *.whl | Select-Object -ExpandProperty FullName
-          python -m pip install $wheel
-
-      # Install the built wheel (macOS/Linux)
-      - name: Install built wheel (Unix)
-        if: matrix.os != 'windows-latest'
-        run: python -m pip install dist/*.whl
-
-      # Now generate stubs, the module should be found
+      # —— Generate Python stubs before packaging the wheel —— 
       - name: Generate Python Stubs (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           export DYLD_LIBRARY_PATH=$(pwd)/install/lib:$DYLD_LIBRARY_PATH
-          pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
+          export PYTHONPATH=$(pwd)/install/lib:$PYTHONPATH
+          python -m pybind11_stubgen pyorbbecsdk \
+            --output-dir=src/pyorbbecsdk --ignore-all-errors
 
       - name: Generate Python Stubs (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
+        run: |
+          export LD_LIBRARY_PATH=$(pwd)/install/lib:$LD_LIBRARY_PATH
+          export PYTHONPATH=$(pwd)/install/lib:$PYTHONPATH
+          python -m pybind11_stubgen pyorbbecsdk \
+            --output-dir=src/pyorbbecsdk --ignore-all-errors
 
       - name: Generate Python Stubs (Windows)
         if: matrix.os == 'windows-latest'
@@ -75,7 +64,12 @@ jobs:
           $root = (Get-Location).Path
           $env:PATH = "$root\install\lib;$env:PATH"
           $env:PYTHONPATH = "$root\install\lib;$env:PYTHONPATH"
-          pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
+          python -m pybind11_stubgen pyorbbecsdk `
+            --output-dir=src\pyorbbecsdk --ignore-all-errors
+      # ———————————————————————————————
+
+      - name: Build Python Wheel
+        run: python setup.py bdist_wheel
 
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
