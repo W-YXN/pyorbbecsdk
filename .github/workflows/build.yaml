@@ -36,19 +36,19 @@ jobs:
       fail-fast: false # Keep running other jobs even if one fails
       matrix:
         include:
-          # Use manylinux_2_28 container (glibc >= 2.28, compatible with Node20 actions)
+          # Use manylinux_2_34 container (glibc >= 2.34, compatible with Node20 actions)
           - os: ubuntu-latest
-            name: manylinux_2_28
-            container: quay.io/pypa/manylinux_2_28_x86_64
-            python-version: 3.11
-            plat_tag: manylinux_2_28_x86_64 # Platform tag for auditwheel
+            name: manylinux_2_34
+            container: quay.io/pypa/manylinux_2_34_x86_64
+            python-version: 3.9
+            plat_tag: manylinux_2_34_x86_64 # Platform tag for auditwheel
           - os: macos-latest
             name: macos
-            python-version: 3.11
+            python-version: 3.9
             plat_tag: macosx_ # Let build figure out the exact tag
           - os: windows-latest
             name: windows
-            python-version: 3.11
+            python-version: 3.9
             plat_tag: win_amd64 # Standard windows tag
 
     runs-on: ${{ matrix.os }}
@@ -63,7 +63,7 @@ jobs:
           name: source-code
           path: . # Download to current directory
 
-      # Set up Python - Should work inside manylinux_2_28 container now
+      # Set up Python - Should work inside manylinux_2_34 container now
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -96,7 +96,7 @@ jobs:
           python -m pybind11_stubgen pyorbbecsdk --output-dir=src/pyorbbecsdk --ignore-all-errors
 
       - name: Generate Python Stubs (Linux)
-        if: matrix.name == 'manylinux_2_28'
+        if: matrix.name == 'manylinux_2_34'
         run: |
           export LD_LIBRARY_PATH=$(pwd)/install/lib:$LD_LIBRARY_PATH
           export PYTHONPATH=$(pwd)/install/lib:$PYTHONPATH
@@ -115,9 +115,9 @@ jobs:
       - name: Build Python Wheel
         run: python -m build --wheel --outdir dist/
 
-      # Repair wheel with auditwheel (Linux only) - Target manylinux_2_28
+      # Repair wheel with auditwheel (Linux only) - Target manylinux_2_34
       - name: (Linux only) Repair with auditwheel
-        if: matrix.name == 'manylinux_2_28'
+        if: matrix.name == 'manylinux_2_34'
         run: |
           auditwheel repair dist/*.whl \
             --plat ${{ matrix.plat_tag }} \
@@ -125,14 +125,14 @@ jobs:
 
       # Cleanup original non-manylinux wheel (Linux only)
       - name: (Linux only) Cleanup original wheels
-        if: matrix.name == 'manylinux_2_28'
+        if: matrix.name == 'manylinux_2_34'
         run: |
           # Find wheels in dist/ that DO NOT contain the platform tag and delete them
           find dist/ -maxdepth 1 -type f -name '*.whl' \
             ! -name '*${{ matrix.plat_tag }}*.whl' \
             -delete
 
-      # Upload platform-tagged wheel artifact - Should work inside manylinux_2_28 container
+      # Upload platform-tagged wheel artifact - Should work inside manylinux_2_34 container
       - name: Upload platform-tagged wheel
         uses: actions/upload-artifact@v4
         with:
