@@ -110,13 +110,15 @@ jobs:
         if: matrix.name == 'manylinux_2_34'
         run: |
           echo "Looking for Python library..."
-          ls -la /opt/python/cp39-cp39/lib/
-          find /opt/python/cp39-cp39/lib -name "libpython3.9*.so*" || echo "No libpython3.9.so found"
-          # Store the path to the Python library in an environment variable
-          PYTHON_LIB=$(find /opt/python/cp39-cp39/lib -name "libpython3.9*.so*" | head -n 1)
-          if [ -n "$PYTHON_LIB" ]; then
-            echo "Found Python library at: $PYTHON_LIB"
-            echo "PYTHON_LIB=$PYTHON_LIB" >> $GITHUB_ENV
+          LIBS=$(find /opt/python/cp39-cp39 -type f -name "libpython3.9*.so*" || true)
+          echo "$LIBS"
+          if [ -n "$LIBS" ]; then
+            LIB=$(echo "$LIBS" | head -n1)
+            echo "Found Python library at: $LIB"
+            echo "PYTHON_LIB=$LIB" >> $GITHUB_ENV
+          else
+            echo "No libpython3.9.so* found under /opt/python/cp39-cp39"
+            exit 1
           fi
 
       # Configure CMake with the found library path
