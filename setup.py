@@ -79,6 +79,8 @@ class CMakeBuild(build_ext):
 
 # Use setuptools setup with minimal configuration since most metadata is in pyproject.toml
 setup(
+    name="pyorbbecsdk-community",  # Make sure this is correct
+    version="1.4.0",     # Define your package version here (or load it dynamically)
     ext_modules=[CMakeExtension('pyorbbecsdk', sourcedir='.')],
     cmdclass={'build_ext': CMakeBuild},
     zip_safe=False,
