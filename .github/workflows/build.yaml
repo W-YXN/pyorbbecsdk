@@ -6,7 +6,7 @@ on:
       tag:
         description: 'Tag to build and publish'
         required: true
-        default: 'v*'
+        default: '*'
 
 jobs:
   build:
@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # 名称示例: python-sdist-1.2.3-ubuntu-latest
-          name: python-sdist-${{ substring(github.event.inputs.tag, 1) }}-${{ matrix.os }}
+          name: python-sdist-${{ github.event.inputs.tag }}-${{ matrix.os }}
           path: dist/*.tar.gz
 
   pypi-publish:
