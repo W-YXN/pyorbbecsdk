@@ -9,11 +9,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyorbbecsdk"
-version = "1.3.1"
-description = "pyorbbecsdk is apython wrapper for the OrbbecSDK"
+version = "1.4.0"
+description = "pyorbbecsdk is a community-maintained python wrapper for the OrbbecSDK"
 readme = "README.md"
 authors = [
-    {name = "Joe Dong", email = "mocun@orbbec.com"}
+    {name = "Joe Dong", email = "mocun@orbbec.com"},
+    {name = "William Yan", email = "pypi@xinan-yan.com"}
 ]
 requires-python = ">=3.7"
 classifiers = [
@@ -29,11 +30,14 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/AzaleaRobotics/pyorbbecsdk"
-"Bug Tracker" = "https://github.com/AzaleaRobotics/pyorbbecsdk/issues"
+"Homepage" = "https://github.com/W-YXN/pyorbbecsdk"
+"Bug Tracker" = "https://github.com/W-YXN/pyorbbecsdk/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+"pyorbbecsdk" = ["*.pyi"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
