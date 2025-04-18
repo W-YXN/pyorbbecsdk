@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.12]
+        python-version: [3.8]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,6 +30,10 @@ jobs:
           python -m pip install --upgrade pip
           # Add pybind11-stubgen dependency
           pip install pybind11==2.11.0 pybind11-global==2.11.0 wheel setuptools pybind11-stubgen
+          # Install auditwheel only on Linux
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            pip install auditwheel
+          fi
       
       - name: Configure CMake
         run: cmake -S . -B build -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }}
@@ -71,10 +75,20 @@ jobs:
       - name: Build Python Wheel
         run: python setup.py bdist_wheel
 
+      # Add this step only for Linux builds
+      - name: Repair Wheel (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          # Repair the wheel and output to the dist directory
+          auditwheel repair dist/*.whl -w dist/
+          # Remove the original non-manylinux wheel
+          rm dist/*-linux_x86_64.whl
+
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
         with:
           name: python-wheel-${{ matrix.os }}-${{ matrix.python-version }}
+          # Upload all wheels from the dist directory (including the repaired one)
           path: dist/*.whl
 
   pypi-publish:
