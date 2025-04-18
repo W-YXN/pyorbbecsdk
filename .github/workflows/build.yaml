@@ -103,7 +103,16 @@ jobs:
           python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
 
       # Configure CMake
-      - name: Configure CMake
+      - name: Configure CMake (manylinux)
+        if: matrix.name == 'manylinux_2_34'
+        run: |
+          cmake -S . -B build \
+            -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }} \
+            -DPython3_FIND_COMPONENTS="Interpreter;Development" \
+            -DPython3_ROOT_DIR=/opt/python/cp${{ matrix.python-version//./ }}-cp${{ matrix.python-version//./ }}
+
+      - name: Configure CMake (other platforms)
+        if: matrix.name != 'manylinux_2_34'
         run: cmake -S . -B build -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }}
 
       # Build C++ Extension
