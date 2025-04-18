@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>pyorbbecsdk</name>
+  <name>pyorbbecsdk-community</name>
   <version>1.4.0</version>
   <description>
-   pyorbbecsdk is a community-maintained python wrapper for the OrbbecSDK
+   pyorbbecsdk-community is a community-maintained python wrapper for the OrbbecSDK
   </description>
   <maintainer email="developer@orbbec.com">Orbbec Developer</maintainer>
   <license>MIT</license>
