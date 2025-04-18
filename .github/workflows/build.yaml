@@ -19,32 +19,42 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.tag }}
+      
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           # Add pybind11-stubgen dependency
           pip install pybind11==2.11.0 pybind11-global==2.11.0 wheel setuptools pybind11-stubgen
+      
       - name: Configure CMake
         run: cmake -S . -B build -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }}
+      
       - name: Build C++ Extension
         run: cmake --build build --config Release
-      # Optional but recommended: Build extension in-place to ensure it's importable for stubgen
-      # This assumes setup.py knows how to build the extension or use CMake artifacts.
-      # If setup.py doesn't handle the build itself, you might need to adjust PYTHONPATH
-      # or copy build artifacts before running stubgen.
-      - name: Build Extension In-Place (for stubgen)
-        run: python setup.py build_ext --inplace
+      
+      - name: Install C++ Extension into install/
+        run: cmake --install build --prefix install
+      
+      - name: Set PYTHONPATH for module import
+        shell: bash
+        run: |
+          echo "PYTHONPATH=$PYTHONPATH:$(pwd)/install/lib" >> $GITHUB_ENV
+          # Windows paths may need special handling
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            echo "PYTHONPATH=$PYTHONPATH;$(pwd)/install/lib" >> $GITHUB_ENV
+          fi
+      
       - name: Generate Python Stubs
-        # Run stubgen. Assumes 'pyorbbecsdk' is the package directory inside 'src'.
-        # The output directory should be the package source directory so setup.py finds the .pyi files.
-        run: pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors # Changed output dir
-        # Important: Ensure your setup.py/pyproject.toml includes *.pyi files in the package data.
+        run: pybind11-stubgen pyorbbecsdk --output-dir=./src/pyorbbecsdk --ignore-all-errors
+      
       - name: Build Python Wheel
         run: python setup.py bdist_wheel
+      
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
         with:
