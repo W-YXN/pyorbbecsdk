@@ -75,7 +75,8 @@ jobs:
       - name: Upload source distribution
         uses: actions/upload-artifact@v4
         with:
-          name: python-sdist
+          # 名称示例: python-sdist-1.2.3-ubuntu-latest
+          name: python-sdist-${{ replace(github.event.inputs.tag, 'v', '') }}-${{ matrix.os }}
           path: dist/*.tar.gz
 
   pypi-publish:
@@ -87,17 +88,16 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download source distribution artifact
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: python-sdist
           path: downloaded
 
       - name: Prepare dist/ for PyPI
         run: |
           set -euxo pipefail
           mkdir -p dist
-          mv downloaded/*.tar.gz dist/
+          mv downloaded/* dist/
 
-      - name: Publish source distribution to PyPI
+      - name: Publish distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
