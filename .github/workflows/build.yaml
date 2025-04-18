@@ -70,7 +70,8 @@ jobs:
           # 使用容器内预装的 Python 3.9（兼容 glibc 2.34）
           export PATH=/opt/python/cp39-cp39/bin:$PATH
           python --version
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade 
+          
         
       # 只在非 Linux 容器中使用 setup-python
       - name: Set up Python ${{ matrix.python-version }}
@@ -84,12 +85,12 @@ jobs:
         if: matrix.name != 'manylinux_2_34'
         run: |
           python -m pip install --upgrade pip
-          pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
+          python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
           
       - name: Install dependencies (Linux)
         if: matrix.name == 'manylinux_2_34'
         run: |
-          pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
+          python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
 
       # Configure CMake
       - name: Configure CMake
@@ -135,7 +136,7 @@ jobs:
       - name: (Linux only) Repair with auditwheel
         if: matrix.name == 'manylinux_2_34'
         run: |
-          auditwheel repair dist/*.whl \
+          python -m auditwheel repair dist/*.whl \
             --plat ${{ matrix.plat_tag }} \
             -w dist/
 
