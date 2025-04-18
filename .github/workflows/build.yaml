@@ -100,20 +100,21 @@ jobs:
       - name: Install dependencies (Linux)
         if: matrix.name == 'manylinux_2_34'
         run: |
-          yum install -y cmake # Install CMake
-          echo "PATH=/usr/bin:$PATH" >> $GITHUB_ENV # Ensure /usr/bin is in PATH for CMake
-          yum install -y python3-devel # Install Python 3 development headers
+          # 确保使用 manylinux 自带的 Python 3.9
+          echo "PATH=/opt/python/cp39-cp39/bin:$PATH" >> $GITHUB_ENV
+          python --version
+          python -m pip install --upgrade pip
           python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
+          yum install -y cmake
 
       - name: Configure CMake (manylinux)
         if: matrix.name == 'manylinux_2_34'
         run: |
           cmake -S . -B build \
             -DPYBIND11_PYTHON_VERSION=3.9 \
-            -DPython3_INCLUDE_DIR=/usr/include/python3.9m \
-            -DPython3_LIBRARY=/usr/lib64/libpython3.9.so.1.0 \
+            -DPython3_ROOT_DIR=/opt/python/cp39-cp39 \
             -DPython3_FIND_STRATEGY=LOCATION \
-            -DPython3_ROOT_DIR=/usr
+            -DPython3_FIND_COMPONENTS="Interpreter;Development"
 
       - name: Configure CMake (other platforms)
         if: matrix.name != 'manylinux_2_34'
