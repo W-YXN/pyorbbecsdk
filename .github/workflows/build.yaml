@@ -70,7 +70,7 @@ jobs:
           # 使用容器内预装的 Python 3.9（兼容 glibc 2.34）
           export PATH=/opt/python/cp39-cp39/bin:$PATH
           python --version
-          python -m pip install --upgrade 
+          python -m pip install --upgrade pip
           
         
       # 只在非 Linux 容器中使用 setup-python
