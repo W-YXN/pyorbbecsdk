@@ -29,7 +29,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # Add pybind11-stubgen dependency
-          pip install pybind11==2.11.0 pybind11-global==2.11.0 wheel setuptools pybind11-stubgen cibuildwheel
+          pip install pybind11==2.11.0 pybind11-global==2.11.0 wheel setuptools pybind11-stubgen build auditwheel
       
       - name: Configure CMake
         run: cmake -S . -B build -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }}
@@ -68,10 +68,15 @@ jobs:
             --output-dir=src\pyorbbecsdk --ignore-all-errors
       # ———————————————————————————————
 
-      - name: Build wheels with cibuildwheel
-        env:
-          CIBW_OUTPUT_DIR: dist
-        run: python -m cibuildwheel
+      - name: Build Python Wheel
+        run: python -m build --wheel --outdir dist/
+
+      - name: (Linux only) Repair with auditwheel
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          auditwheel repair dist/*.whl \
+            --plat manylinux2014_x86_64 \
+            -w dist/
 
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
