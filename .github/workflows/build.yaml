@@ -74,13 +74,20 @@ jobs:
           path: . # Download to current directory
 
       # 为 Linux 容器使用预装的 Python
-      - name: (Linux only) Use container Python 
+      - name: (Linux only) Use external Python 
         if: matrix.name == 'manylinux_2_34'
         run: |
-          # 使用容器内预装的 Python 3.9（兼容 glibc 2.34）
-          export PATH=/opt/python/cp39-cp39/bin:$PATH
-          python --version
-          python -m pip install --upgrade pip
+          yum install -y python3
+          ls usr/bin/python3 # Verify Python installation
+          if [ -f /usr/bin/python3 ]; then
+            echo "Python3 found at /usr/bin/python3"
+          else
+            echo "Python3 not found at /usr/bin/python3"
+            exit 1
+          fi
+          # Check Python version
+          /usr/bin/python3 --version || exit 1
+          echo "PATH=/usr/bin:$PATH" >> $GITHUB_ENV # Prepend to PATH
           
         
       # 只在非 Linux 容器中使用 setup-python
@@ -100,25 +107,26 @@ jobs:
       - name: Install dependencies (Linux)
         if: matrix.name == 'manylinux_2_34'
         run: |
-          # 确保使用 manylinux 自带的 Python 3.9
-          echo "PATH=/opt/python/cp39-cp39/bin:$PATH" >> $GITHUB_ENV
-          python --version
-          python -m pip install --upgrade pip
-          python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
-          yum install -y cmake
+          yum install -y python3-devel python3-pip cmake
           echo "PATH=/usr/bin:$PATH" >> $GITHUB_ENV
-          cmake --version
+          python3 --version
+          python3 -m pip install --upgrade pip
+          python3 -m pip install \
+            wheel setuptools \
+            pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen \
+            build auditwheel
 
       - name: Configure CMake (manylinux)
         if: matrix.name == 'manylinux_2_34'
         run: |
           cmake -S . -B build \
             -DPYBIND11_PYTHON_VERSION=3.9 \
-            -DPython3_ROOT_DIR=/opt/python/cp39-cp39 \
+            -DPython3_EXECUTABLE=/usr/bin/python3 \
+            -DPython3_INCLUDE_DIR=/usr/include/python3.9m \
+            -DPython3_LIBRARY=/usr/lib64/libpython3.9.so.1.0 \
             -DPython3_FIND_STRATEGY=LOCATION \
-            -DPython3_FIND_COMPONENTS="Interpreter" \
-            -DCMAKE_FIND_LIBRARY_USE_LIB64_PATHS=ON \
-            -DCMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX=".so.1.0"
+            -DPython3_FIND_COMPONENTS="Interpreter;Development" \
+            -DCMAKE_FIND_LIBRARY_USE_LIB64_PATHS=ON
             
       - name: Configure CMake (other platforms)
         if: matrix.name != 'manylinux_2_34'
