@@ -63,16 +63,32 @@ jobs:
           name: source-code
           path: . # Download to current directory
 
-      # Set up Python - Should work inside manylinux_2_34 container now
+      # 为 Linux 容器使用预装的 Python
+      - name: Use container Python (Linux only)
+        if: matrix.name == 'manylinux_2_34'
+        run: |
+          # 使用容器内预装的 Python 3.9（兼容 glibc 2.34）
+          export PATH=/opt/python/cp39-cp39/bin:$PATH
+          python --version
+          python -m pip install --upgrade pip
+        
+      # 只在非 Linux 容器中使用 setup-python
       - name: Set up Python ${{ matrix.python-version }}
+        if: matrix.name != 'manylinux_2_34'
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Install Python build dependencies
-      - name: Install dependencies
+      # 根据平台分别安装依赖
+      - name: Install dependencies (non-Linux)
+        if: matrix.name != 'manylinux_2_34'
         run: |
           python -m pip install --upgrade pip
+          pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
+          
+      - name: Install dependencies (Linux)
+        if: matrix.name == 'manylinux_2_34'
+        run: |
           pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
 
       # Configure CMake
