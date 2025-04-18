@@ -10,11 +10,22 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.12]
+        include:
+          - os: ubuntu-latest
+            name: manylinux2014
+            container: quay.io/pypa/manylinux2014_x86_64
+            python-version: 3.12
+          - os: macos-latest
+            name: macos
+            python-version: 3.12
+          - os: windows-latest
+            name: windows
+            python-version: 3.12
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container || fromJSON('null') }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,7 +61,7 @@ jobs:
             --output-dir=src/pyorbbecsdk --ignore-all-errors
 
       - name: Generate Python Stubs (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.name == 'manylinux2014'
         run: |
           export LD_LIBRARY_PATH=$(pwd)/install/lib:$LD_LIBRARY_PATH
           export PYTHONPATH=$(pwd)/install/lib:$PYTHONPATH
@@ -72,11 +83,18 @@ jobs:
         run: python -m build --wheel --outdir dist/
 
       - name: (Linux only) Repair with auditwheel
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.name == 'manylinux2014'
         run: |
           auditwheel repair dist/*.whl \
             --plat manylinux2014_x86_64 \
             -w dist/
+
+      - name: (Linux only) Cleanup original wheels
+        if: matrix.name == 'manylinux2014'
+        run: |
+          find dist/ -maxdepth 1 -type f -name '*.whl' \
+            ! -name '*manylinux2014_x86_64*.whl' \
+            -delete
 
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
