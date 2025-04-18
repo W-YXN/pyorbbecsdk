@@ -107,15 +107,17 @@ jobs:
           python -m pip install wheel setuptools pybind11==2.11.0 pybind11-global==2.11.0 pybind11-stubgen build auditwheel
           yum install -y cmake
 
-      - name: Configure CMake (manylinux)
+            - name: Configure CMake (manylinux)
         if: matrix.name == 'manylinux_2_34'
         run: |
           cmake -S . -B build \
             -DPYBIND11_PYTHON_VERSION=3.9 \
             -DPython3_ROOT_DIR=/opt/python/cp39-cp39 \
             -DPython3_FIND_STRATEGY=LOCATION \
-            -DPython3_FIND_COMPONENTS="Interpreter;Development"
-
+            -DPython3_FIND_COMPONENTS="Interpreter;Development" \
+            -DCMAKE_FIND_LIBRARY_USE_LIB64_PATHS=ON \
+            -DCMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX=".so.1.0"
+            
       - name: Configure CMake (other platforms)
         if: matrix.name != 'manylinux_2_34'
         run: cmake -S . -B build -DPYBIND11_PYTHON_VERSION=${{ matrix.python-version }}
