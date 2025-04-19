@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyorbbecsdk-community"
-version = "1.4.0"
+version = "1.4.1"
 description = "pyorbbecsdk-community is a community-maintained python wrapper for the OrbbecSDK"
 readme = "README.md"
 authors = [
