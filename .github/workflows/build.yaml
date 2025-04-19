@@ -71,6 +71,19 @@ jobs:
       - name: Build Python Wheel
         run: python setup.py bdist_wheel
 
+      - name: Rename Linux Wheel (Force Manylinux Tag) # Force manylinux tag, not stable ABI, but works for now
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          set -e # Exit immediately if a command exits with a non-zero status.
+          # Find the generated linux wheel file (assuming only one)
+          wheel_file=$(ls dist/*-linux_x86_64.whl)
+          # Construct the new name with a manylinux tag (e.g., manylinux2014)
+          # Choose the tag carefully. manylinux2014 is a common choice.
+          new_wheel_file=$(echo "$wheel_file" | sed 's/linux_x86_64/manylinux2014_x86_64/')
+          echo "Renaming '$wheel_file' to '$new_wheel_file'"
+          mv "$wheel_file" "$new_wheel_file"
+          ls dist # Verify the rename
+
       - name: Upload platform‑tagged wheel
         uses: actions/upload-artifact@v4
         with:
