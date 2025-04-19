@@ -1,3 +1,23 @@
+# pyorbbecsdk (Forked)
+
+[![PyPI version](https://badge.fury.io/py/pyorbbecsdk-community.svg)](https://pypi.org/project/pyorbbecsdk-community/)
+[![CI](https://github.com/W-YXN/pyorbbecsdk/actions/workflows/build.yaml/badge.svg)](https://github.com/W-YXN/pyorbbecsdk/actions)
+
+**This repository is a fork of [orbbec/pyorbbecsdk](https://github.com/orbbec/pyorbbecsdk), rewritten to add CI automated builds and simplified deployment.**
+
+Install directly from PyPI:
+
+```bash
+pip install pyorbbecsdk-community
+```
+
+---
+**Note:** This is a community maintained fork. For any issues or feature requests, please open an issue on this repository.
+---
+
+From here onward, the content is from the original repository's README.
+
+
 # Python Bindings for Orbbec SDK
 
 This main branch provides Python bindings for the [Orbbec SDK v1.x](https://github.com/orbbec/OrbbecSDK), allowing developers to interface with Orbbec devices in Python.
