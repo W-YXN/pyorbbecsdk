@@ -1,4 +1,21 @@
 {
   "projectName": "pyorbbecsdk",
-  "projectOwner": "W-YXN"
+  "projectOwner": "W-YXN",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "nikita-azalea",
+      "name": "nikita-azalea",
+      "avatar_url": "https://avatars.githubusercontent.com/u/196702632?v=4",
+      "profile": "https://github.com/nikita-azalea",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
