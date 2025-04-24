@@ -13,6 +13,32 @@ Install directly from PyPI:
 pip install pyorbbecsdk-community
 ```
 
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://cpaxton.github.io"><img src="https://avatars.githubusercontent.com/u/165678659?v=4?s=100" width="100px;" alt="Chris Paxton"/><br /><sub><b>Chris Paxton</b></sub></a><br /><a href="#code-hello-cpaxton" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://lukaskoestler.com"><img src="https://avatars.githubusercontent.com/u/14993470?v=4?s=100" width="100px;" alt="Lukas Koestler"/><br /><sub><b>Lukas Koestler</b></sub></a><br /><a href="#code-lkskstlr" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://davidmillard.info"><img src="https://avatars.githubusercontent.com/u/757949?v=4?s=100" width="100px;" alt="David Millard"/><br /><sub><b>David Millard</b></sub></a><br /><a href="#code-dmillard" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/nikita-azalea"><img src="https://avatars.githubusercontent.com/u/196702632?v=4?s=100" width="100px;" alt="nikita-azalea"/><br /><sub><b>nikita-azalea</b></sub></a><br /><a href="#code-nikita-azalea" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zhonghong322"><img src="https://avatars.githubusercontent.com/u/142879755?v=4?s=100" width="100px;" alt="zhonghong322"/><br /><sub><b>zhonghong322</b></sub></a><br /><a href="#code-zhonghong322" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.xinan-yan.com"><img src="https://avatars.githubusercontent.com/u/37238921?v=4?s=100" width="100px;" alt="William Yan"/><br /><sub><b>William Yan</b></sub></a><br /><a href="#code-W-YXN" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jian-dong"><img src="https://avatars.githubusercontent.com/u/22299138?v=4?s=100" width="100px;" alt="Joe Dong"/><br /><sub><b>Joe Dong</b></sub></a><br /><a href="#code-jian-dong" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+
 ---
 **Note:** This is a community maintained fork. For any issues or feature requests, please open an issue on this repository.
 ---
@@ -304,27 +330,3 @@ For detailed documentation, please refer to [docs/README.md](docs/README_EN.md).
 ## License
 
 This project is licensed under the [Apache License 2.0](https://github.com/W-YXN/pyorbbecsdk/blob/main/LICENSE).
-
-## Contributors
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://cpaxton.github.io"><img src="https://avatars.githubusercontent.com/u/165678659?v=4?s=100" width="100px;" alt="Chris Paxton"/><br /><sub><b>Chris Paxton</b></sub></a><br /><a href="#code-hello-cpaxton" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://lukaskoestler.com"><img src="https://avatars.githubusercontent.com/u/14993470?v=4?s=100" width="100px;" alt="Lukas Koestler"/><br /><sub><b>Lukas Koestler</b></sub></a><br /><a href="#code-lkskstlr" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://davidmillard.info"><img src="https://avatars.githubusercontent.com/u/757949?v=4?s=100" width="100px;" alt="David Millard"/><br /><sub><b>David Millard</b></sub></a><br /><a href="#code-dmillard" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/nikita-azalea"><img src="https://avatars.githubusercontent.com/u/196702632?v=4?s=100" width="100px;" alt="nikita-azalea"/><br /><sub><b>nikita-azalea</b></sub></a><br /><a href="#code-nikita-azalea" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zhonghong322"><img src="https://avatars.githubusercontent.com/u/142879755?v=4?s=100" width="100px;" alt="zhonghong322"/><br /><sub><b>zhonghong322</b></sub></a><br /><a href="#code-zhonghong322" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://www.xinan-yan.com"><img src="https://avatars.githubusercontent.com/u/37238921?v=4?s=100" width="100px;" alt="William Yan"/><br /><sub><b>William Yan</b></sub></a><br /><a href="#code-W-YXN" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jian-dong"><img src="https://avatars.githubusercontent.com/u/22299138?v=4?s=100" width="100px;" alt="Joe Dong"/><br /><sub><b>Joe Dong</b></sub></a><br /><a href="#code-jian-dong" title="Code">💻</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
