@@ -309,6 +309,13 @@ This project is licensed under the [Apache License 2.0](https://github.com/W-YXN
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://davidmillard.info"><img src="https://avatars.githubusercontent.com/u/757949?v=4?s=100" width="100px;" alt="David Millard"/><br /><sub><b>David Millard</b></sub></a><br /><a href="#code-dmillard" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
