@@ -2,6 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/pyorbbecsdk-community.svg)](https://pypi.org/project/pyorbbecsdk-community/)
 [![CI](https://github.com/W-YXN/pyorbbecsdk/actions/workflows/build.yaml/badge.svg)](https://github.com/W-YXN/pyorbbecsdk/actions)
+[![All Contributors](https://img.shields.io/github/all-contributors/W-YXN/pyorbbecsdk?style=flat-square)](#contributors)
 
 **This repository is a fork of [orbbec/pyorbbecsdk](https://github.com/orbbec/pyorbbecsdk), rewritten to add CI automated builds and simplified deployment.**
 
@@ -301,4 +302,15 @@ For detailed documentation, please refer to [docs/README.md](docs/README_EN.md).
 
 ## License
 
-This project is licensed under the Apache License 2.0.
+This project is licensed under the [Apache License 2.0](https://github.com/W-YXN/pyorbbecsdk/blob/main/LICENSE).
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
