@@ -3,6 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/pyorbbecsdk-community.svg)](https://pypi.org/project/pyorbbecsdk-community/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pyorbbecsdk-community)
 [![CI](https://github.com/W-YXN/pyorbbecsdk/actions/workflows/build.yaml/badge.svg)](https://github.com/W-YXN/pyorbbecsdk/actions)
+![GitHub License](https://img.shields.io/github/license/W-YXN/pyorbbecsdk)
 [![All Contributors](https://img.shields.io/github/all-contributors/W-YXN/pyorbbecsdk?style=flat-square)](#contributors)
 
 **This repository is a fork of [orbbec/pyorbbecsdk](https://github.com/orbbec/pyorbbecsdk), rewritten to add CI automated builds and simplified deployment.**
