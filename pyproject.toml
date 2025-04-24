@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyorbbecsdk-community"
-version = "1.4.1"
+version = "1.4.2"
 description = "pyorbbecsdk-community is a community-maintained python wrapper for the OrbbecSDK"
 readme = "README.md"
 authors = [
@@ -37,7 +37,7 @@ dependencies = [
 package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
-"pyorbbecsdk" = ["*.pyi"]
+"pyorbbecsdk" = ["*.pyi", "*.dll", "*.lib", "*.so", "*.so.*", "*.dylib"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

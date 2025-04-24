@@ -95,6 +95,27 @@ elseif (WIN32)
     )
 endif ()
 
+if(WIN32)
+    file(GLOB SDK_RUNTIME_LIBS LIST_DIRECTORIES false CONFIGURE_DEPENDS "${ORBBEC_LIBS}/*.dll")
+elseif(APPLE)
+    file(GLOB SDK_RUNTIME_LIBS LIST_DIRECTORIES false CONFIGURE_DEPENDS "${ORBBEC_LIBS}/*.dylib")
+else() # UNIX
+    file(GLOB SDK_RUNTIME_LIBS LIST_DIRECTORIES false CONFIGURE_DEPENDS
+        "${ORBBEC_LIBS}/*.so"
+        "${ORBBEC_LIBS}/*.so.*"
+    )
+endif()
+
+message(STATUS "Found SDK runtime libraries for ${HOST_PLATFORM}: ${SDK_RUNTIME_LIBS}")
+
+# $<TARGET_FILE_DIR:${PROJECT_NAME}> is the directory where the target is built
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDK_RUNTIME_LIBS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    COMMENT "Copying OrbbecSDK runtime dependencies to module directory ${PROJECT_NAME}"
+    VERBATIM # Necessary to avoid escaping issues with Windows paths
+)
+
 set(PY_TEST_SRCS
   test/test_context.py
   test/test_device.py
