@@ -1,4 +1,21 @@
 {
   "projectName": "pyorbbecsdk",
-  "projectOwner": "W-YXN"
+  "projectOwner": "W-YXN",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "dmillard",
+      "name": "David Millard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/757949?v=4",
+      "profile": "http://davidmillard.info",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
