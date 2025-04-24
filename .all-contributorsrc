@@ -9,6 +9,15 @@
   "contributorsPerLine": 7,
   "contributors": [
     {
+      "login": "lkskstlr",
+      "name": "Lukas Koestler",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14993470?v=4",
+      "profile": "https://lukaskoestler.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
       "login": "dmillard",
       "name": "David Millard",
       "avatar_url": "https://avatars.githubusercontent.com/u/757949?v=4",
