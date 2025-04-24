@@ -1,4 +1,21 @@
 {
   "projectName": "pyorbbecsdk",
-  "projectOwner": "W-YXN"
+  "projectOwner": "W-YXN",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "zhonghong322",
+      "name": "zhonghong322",
+      "avatar_url": "https://avatars.githubusercontent.com/u/142879755?v=4",
+      "profile": "https://github.com/zhonghong322",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
