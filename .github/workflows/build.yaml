@@ -17,7 +17,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12'] # Add more Python versions as needed
-        
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,7 +95,7 @@ jobs:
 
   pypi-publish:
     name: Publish to PyPI
-    needs: build
+    needs: build-wheels
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
