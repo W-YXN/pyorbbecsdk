@@ -1,6 +1,7 @@
 # pyorbbecsdk (Forked)
 
 [![PyPI version](https://badge.fury.io/py/pyorbbecsdk-community.svg)](https://pypi.org/project/pyorbbecsdk-community/)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/pyorbbecsdk-community)
 [![CI](https://github.com/W-YXN/pyorbbecsdk/actions/workflows/build.yaml/badge.svg)](https://github.com/W-YXN/pyorbbecsdk/actions)
 [![All Contributors](https://img.shields.io/github/all-contributors/W-YXN/pyorbbecsdk?style=flat-square)](#contributors)
 
