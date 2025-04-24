@@ -313,7 +313,11 @@ This project is licensed under the [Apache License 2.0](https://github.com/W-YXN
 <table>
   <tbody>
     <tr>
+
+      <td align="center" valign="top" width="14.28%"><a href="http://www.xinan-yan.com"><img src="https://avatars.githubusercontent.com/u/37238921?v=4?s=100" width="100px;" alt="William Yan"/><br /><sub><b>William Yan</b></sub></a><br /><a href="#code-W-YXN" title="Code">💻</a></td>
+      
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jian-dong"><img src="https://avatars.githubusercontent.com/u/22299138?v=4?s=100" width="100px;" alt="Joe Dong"/><br /><sub><b>Joe Dong</b></sub></a><br /><a href="#code-jian-dong" title="Code">💻</a></td>
+
     </tr>
   </tbody>
 </table>
