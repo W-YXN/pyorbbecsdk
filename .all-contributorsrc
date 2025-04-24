@@ -1,4 +1,21 @@
 {
   "projectName": "pyorbbecsdk",
-  "projectOwner": "W-YXN"
+  "projectOwner": "W-YXN",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "W-YXN",
+      "name": "William Yan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37238921?v=4",
+      "profile": "http://www.xinan-yan.com",
+      "contributions": [
+        "code"
+      ]
+    }
+  ]
 }
