@@ -1,6 +1,7 @@
 # pyorbbecsdk (Forked)
 
 [![PyPI version](https://badge.fury.io/py/pyorbbecsdk-community.svg)](https://pypi.org/project/pyorbbecsdk-community/)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/pyorbbecsdk-community)
 [![CI](https://github.com/W-YXN/pyorbbecsdk/actions/workflows/build.yaml/badge.svg)](https://github.com/W-YXN/pyorbbecsdk/actions)
 [![All Contributors](https://img.shields.io/github/all-contributors/W-YXN/pyorbbecsdk?style=flat-square)](#contributors)
 
@@ -313,6 +314,9 @@ This project is licensed under the [Apache License 2.0](https://github.com/W-YXN
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/nikita-azalea"><img src="https://avatars.githubusercontent.com/u/196702632?v=4?s=100" width="100px;" alt="nikita-azalea"/><br /><sub><b>nikita-azalea</b></sub></a><br /><a href="#code-nikita-azalea" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zhonghong322"><img src="https://avatars.githubusercontent.com/u/142879755?v=4?s=100" width="100px;" alt="zhonghong322"/><br /><sub><b>zhonghong322</b></sub></a><br /><a href="#code-zhonghong322" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.xinan-yan.com"><img src="https://avatars.githubusercontent.com/u/37238921?v=4?s=100" width="100px;" alt="William Yan"/><br /><sub><b>William Yan</b></sub></a><br /><a href="#code-W-YXN" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jian-dong"><img src="https://avatars.githubusercontent.com/u/22299138?v=4?s=100" width="100px;" alt="Joe Dong"/><br /><sub><b>Joe Dong</b></sub></a><br /><a href="#code-jian-dong" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
